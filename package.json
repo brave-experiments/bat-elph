@@ -1,27 +1,46 @@
 {
- "name": "bat-elph",
- "version": "0.1.0",
- "description": "BAT Ad Timing Engine",
- "main": "elph.js",
- "directories": {
-  "test": "test"
- },
- "dependencies": {
-  "co-mocha": "^1.1.2",
-  "chai": "^4.1.2",
-  "mocha": "^5.1.1"
- },
- "devDependencies": {},
- "scripts": {
-  "lint": "standard",
-  "test": "mocha test",
-  "test-security": "nsp check"
- },
- "author": "Brave Developers <support@brave.com>",
- "license": "MPL-2.0",
- "repository": {
-  "type": "git",
-  "url": "https://github.com/brave-intl/bat-elph"
- },
- "homepage": "https://github.com/brave-intl/bat-elph"
+  "name": "@brave-intl/bat-elph",
+  "version": "0.1.0",
+  "description": "BAT Ad Timing Engine",
+  "main": "elph.js",
+  "directories": {
+    "test": "test"
+  },
+  "dependencies": {},
+  "engines": {
+    "node": "8.9.2",
+    "npm": "5.5.1"
+  },
+  "devDependencies": {
+    "babel-eslint": "^8.0.0",
+    "npm-check-updates": "^2.12.1",
+    "nsp": "^3.1.0",
+    "standard": "10.0.3",
+    "co-mocha": "^1.1.2",
+    "chai": "^4.1.2",
+    "mocha": "^5.1.1"
+  },
+  "scripts": {
+    "lint": "standard",
+    "lint-fix": "standard --fix",
+    "test": "mocha test",
+    "test-all": "npm run test && npm run test-security",
+    "test-security": "nsp check"
+  },
+  "author": "Brave Developers <support@brave.com>",
+  "license": "MPL-2.0",
+  "bugs": {
+    "url": "https://github.com/brave-intl/bat-elph/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/brave-intl/bat-elph"
+  },
+  "homepage": "https://github.com/brave-intl/bat-elph",
+  "standard": {
+    "ignore": [
+      "test/test.js"
+    ],
+    "parser": "babel-eslint"
+  }
 }

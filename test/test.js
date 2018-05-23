@@ -72,7 +72,37 @@ describe('Online OO prediction', function() {
         el = elph.updateOnlineELPH(seq[i],el)
       }
       assert.deepEqual(el,{ hspace:    { A: { A: 45, B: 12, C: 12 },     'A,A': { B: 6, A: 22, C: 6 },     B: { A: 12, B: 5, C: 1 },     'A,B': { A: 18 },     'A,A,B': { A: 6 },     'B,A': { A: 6, B: 10, C: 2 },     'A,B,A': { A: 6 },     'B,A,A': { B: 5, C: 1 },     C: { A: 10, C: 5 },     'A,C': { A: 15 },     'A,A,C': { A: 5 },     'C,A': { A: 5, C: 10 },     'A,C,A': { A: 5 },     'C,A,A': { C: 5 } },  stm: [ 'A', 'A', 'C' ],  preds: [], predEnt: [], stmSz: 3,  predSz: 1000, thresh: 1 })
-//    assert.deepEqual(pred, [ NaN,  NaN,  'A',  'B',  'A',  'A',  'A',  'A',  'B',  'A',  'A',  'B',  'A',  'A',  'B',  'A',  'A',  'B',  'A',  'A',  'B',  'A',  'A',  'A',  'A',  'A',  'C',  'A',  'A',  'C',  'A',  'A',  'C',  'A',  'A',  'C' ] ); // TODO Fix this; also check
+      assert.deepEqual(pred.slice(2,pred.length), [  'A',  'B',  'A',  'A',  'A',  'A',  'B',  'A',  'A',  'B',  'A',  'A',  'B',  'A',  'A',  'B',  'A',  'A',  'B',  'A',  'A',  'A',  'A',  'A',  'C',  'A',  'A',  'C',  'A',  'A',  'C',  'A',  'A',  'C' ] ); // deepEqual fails on nan
+    });
+  });
+});
+
+
+describe('Online small scale OO vacuum', function() {
+  describe(' update and vacuum test', function() {
+    it('several obs vacuum checks', function(){
+      let a = 'AABAABAABAABAABAABAACAACAACAACAACAAC'
+      let seq = a.split('')
+      var el = elph.initOnlineELPH(3)
+      el = elph.setBulkELPH(seq,el)
+      assert.deepEqual(el,{ hspace:    { A: { A: 45, B: 12, C: 12 },     'A,A': { B: 6, A: 22, C: 6 },     B: { A: 12, B: 5, C: 1 },     'A,B': { A: 18 },     'A,A,B': { A: 6 },     'B,A': { A: 6, B: 10, C: 2 },     'A,B,A': { A: 6 },     'B,A,A': { B: 5, C: 1 },     C: { A: 10, C: 5 },     'A,C': { A: 15 },     'A,A,C': { A: 5 },     'C,A': { A: 5, C: 10 },     'A,C,A': { A: 5 },     'C,A,A': { C: 5 } },  stm: [ 'A', 'A', 'C' ],  preds: [], predEnt: [], stmSz: 3,  predSz: 1000, thresh: 1 })
+      el = elph.vacuumELPH(el)
+      assert.deepEqual(Object.keys(el.hspace).length,7)
+    });
+  });
+});
+
+
+describe('Online large scale OO prediction', function() {
+  describe('Long update and Prediction test', function() {
+    it('several obs pred checks', function(){
+      let a = 'AaaABAAaaBAAaaBAABAAaaBcAABAAaaCcAACcAAaaCAACcAAaaCcAACcc'
+      let seq = a.split('')
+      var el = elph.initOnlineELPH(9)
+      el = elph.setBulkELPH(seq,el)
+      assert.deepEqual(Object.keys(el.hspace).length,2304)
+      el = elph.vacuumELPH(el)
+      assert.deepEqual(Object.keys(el.hspace).length,1144)
     });
   });
 });

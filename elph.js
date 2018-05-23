@@ -104,17 +104,7 @@ function shannonEntropy (pspace) {
   }
   return hrel
 }
-
-// TODO integrate this with observation/update/predict?
-function pruneHspaceBulk (hspace, thresh = 1.0) {
-  for (var key in hspace) {
-    if (reliableEntropy(hspace[key]) > thresh) {
-      delete hspace[key]
-    }
-  }
-  return hspace
-}
- */
+*/
 
 // observe a character
 function observed (hspace, stm, obs) {
@@ -138,6 +128,16 @@ function predict (hspace, stm) {
     out = {symbol: maxCnt(hspace[liveOnes[idx]]), ent: h[idx]}
   }
   return out
+}
+
+// TODO integrate this with observation/update/predict?
+function pruneHspaceBulk (hspace, thresh = 1.0) {
+  for (var key in hspace) {
+    if (reliableEntropy(hspace[key]) > thresh) {
+      delete hspace[key]
+    }
+  }
+  return hspace
 }
 
 // containerization of base functions
@@ -168,16 +168,27 @@ function predictOnlineELPH (elph) {
   // TODO pushRing of entropy and  rolling window of predictions
 }
 
-/*
-function setBulkELPH (string, elph) {
+function vacuumELPH (elph) {
+  elph.hspace = pruneHspaceBulk(elph.hspace, elph.thresh)
+  return elph // doesn't need to return; trims the object in place because js scoping is ... I think because it's 'var'
+  // TODO pushRing of entropy and  rolling window of predictions
 }
- */
+
+// useful for 'fitting'
+function setBulkELPH (slist, elph) {
+  for (var i in slist) {
+    elph = updateOnlineELPH(slist[i], elph)
+  }
+  return elph
+}
 
 module.exports = {
   powersetNNil: powersetNNil,
   initOnlineELPH: initOnlineELPH,
   updateOnlineELPH: updateOnlineELPH,
   predictOnlineELPH: predictOnlineELPH,
+  setBulkELPH: setBulkELPH,
+  vacuumELPH: vacuumELPH,
   reliableEntropy: reliableEntropy,
   arrayIntersect: arrayIntersect,
   observed: observed

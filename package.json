@@ -6,7 +6,9 @@
   "directories": {
     "test": "test"
   },
-  "dependencies": {},
+  "dependencies": {
+    "lint": "^1.1.2"
+  },
   "engines": {
     "node": "8.9.2",
     "npm": "5.5.1"

@@ -1,5 +1,10 @@
 'use strict'
 
+// this form of ace restricts alphabetizer to 92 uniques aka 6.5 bits
+const ace = '!"#$%&()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[]^_`abcdefghijklmnopqrstuvwxyz{|}~'
+
+// define array functions
+
 // why on earth isn't this a js primitive for vectors?
 // potential optim: sort and https://gist.github.com/matthewkastor/4602551
 function arrayIntersect (A, B) {
@@ -14,13 +19,10 @@ function arrayIntersect (A, B) {
   return [...intersection]
 }
 
-// define array functions
 function vectorSum (v) {
   return v.reduce((x, y) => x + y)
 }
 
-// looking at stuff like this; I should have written this in C++ and node-gyp
-// for, like, clarity and brevity
 function vectorMaxIdx (v) {
   return v.reduce((im, x, i, arr) => x > arr[im] ? i : im, 0)
 }
@@ -182,6 +184,63 @@ function setBulkELPH (slist, elph) {
   return elph
 }
 
+function alphabetizer (topicvar = 'low', shop = false, ccload = false, adserv = false, adclick = false, frequency = 'low', recency = 'low') {
+  let tvar = (topicvar === 'low') ? 0 : 1
+  let svar = shop ?  0 : 1
+  let cc = ccload ? 0 : 1
+  let rec = (recency === 'low') ? 0 : 1
+  let freq = (frequency === 'low') ? 0 : 1
+  let index
+  if(adserv || adclick) {
+    index = adserv ? 86 : 87 // y/z for adserv/adclick -not doing cartesian product of these with other pieces of state
+  } else {
+    index = tvar + (2 * svar) + (4 * cc) + (8 * rec) + (16 * freq)
+  }
+  return ace[index]
+}
+
+function simpleScore (topicvar = 'low', shop = false, ccload = false, adserv = false, adclick = false, frequency = 'low', recency = 'low') {
+  let tvar = (topicvar === 'low') ? 1 : 2
+  let svar = shop ?  0 : 1
+  let cc = ccload ? 0 : 1
+  let rec = (recency === 'low') ? 1 : 2
+  let freq = (frequency === 'low') ? 1 : 2
+  return (10 * shop) + (20 * ccload) + (2 *rec) + (2 * freq)
+}
+
+function dealphabet (x) {
+  let adstate
+  switch(x) {
+  case 'y' :
+    adstate = 'servead'
+    break
+  case 'z' :
+    adstate = 'clickad'
+    break
+  default :
+    adstate = 'noad'
+  }
+  return adstate
+}
+
+// function pastAccuracy(moves, hist) {
+//   var pastAcc, ind;
+//   pastAcc = 0;
+//   for (ind=0; ind<moves.length; ind++) {
+//     pastAcc += Math.abs(moves[ind] - hist[ind] );
+//   }
+//   return pastAcc;
+// }
+
+// function aggregateExperts(pastAc, pred, exptWt, adsServed, cPred, exptInd) {
+//   let eta = Math.sqrt( Math.log(pred.length) / ( 2 * adsServed -1) )
+//   let denom = 0
+//   let num = 0
+//   for (var ind = 0; ind < pred.length; ind++) {
+//     var pastAccur = pastAccuracy(pred[ind])
+//   }
+// }
+
 module.exports = {
   powersetNNil: powersetNNil,
   initOnlineELPH: initOnlineELPH,
@@ -191,6 +250,7 @@ module.exports = {
   vacuumELPH: vacuumELPH,
   reliableEntropy: reliableEntropy,
   arrayIntersect: arrayIntersect,
+  alphabetizer: alphabetizer,
+  dealphabet: dealphabet,
   observed: observed
-
 }

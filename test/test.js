@@ -106,3 +106,45 @@ describe('Online large scale OO prediction', function() {
     });
   });
 });
+
+
+
+describe('Test dealphabet', function() {
+  describe('Alphabetizer helpers', function() {
+    it('dumb dealphabet check', function(){
+      let svd = elph.dealphabet('y')
+      let clic = elph.dealphabet('z')
+      let any = elph.dealphabet('l')
+      assert.equal(svd,'servead')
+      assert.equal(clic,'clickad')
+      assert.equal(any,'noad')
+    });
+  });
+});
+
+
+
+describe('Test alphabet', function() {
+  describe('Alphabetizer helpers', function() {
+    it(' alphabet state check', function(){
+      let svd = elph.dealphabet(elph.alphabetizer('low',true,true,true,false,'high','high'))
+      let clic = elph.dealphabet(elph.alphabetizer('low',true,true,false,true,'high','high'))
+      let any = elph.dealphabet(elph.alphabetizer('low',true,true,false,false,'high','high'))
+      assert.equal(svd,'servead')
+      assert.equal(clic,'clickad')
+      assert.equal(any,'noad')
+      let spec1 = elph.alphabetizer('low',true,true,false,false,'high','high')
+      let spec2 = elph.alphabetizer('low',true,true,false,false,'high','low')
+      let spec3 = elph.alphabetizer('high',true,true,false,false,'high','low')
+      let spec4 = elph.alphabetizer('low',false,true,false,false,'low','low')
+      let spec5 = elph.alphabetizer('low',false,false,false,false,'low','high')
+      assert.equal(spec1,':')
+      assert.equal(spec2,'2')
+      assert.equal(spec3,'3')
+      assert.equal(spec4,'#')
+      assert.equal(spec5,'0')
+    });
+  });
+});
+
+

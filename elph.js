@@ -186,12 +186,12 @@ function setBulkELPH (slist, elph) {
 
 function alphabetizer (topicvar = 'low', shop = false, ccload = false, adserv = false, adclick = false, frequency = 'low', recency = 'low') {
   let tvar = (topicvar === 'low') ? 0 : 1
-  let svar = shop ?  0 : 1
+  let svar = shop ? 0 : 1
   let cc = ccload ? 0 : 1
   let rec = (recency === 'low') ? 0 : 1
   let freq = (frequency === 'low') ? 0 : 1
   let index
-  if(adserv || adclick) {
+  if (adserv || adclick) {
     index = adserv ? 86 : 87 // y/z for adserv/adclick -not doing cartesian product of these with other pieces of state
   } else {
     index = tvar + (2 * svar) + (4 * cc) + (8 * rec) + (16 * freq)
@@ -199,26 +199,26 @@ function alphabetizer (topicvar = 'low', shop = false, ccload = false, adserv = 
   return ace[index]
 }
 
-function simpleScore (topicvar = 'low', shop = false, ccload = false, adserv = false, adclick = false, frequency = 'low', recency = 'low') {
-  let tvar = (topicvar === 'low') ? 1 : 2
-  let svar = shop ?  0 : 1
-  let cc = ccload ? 0 : 1
-  let rec = (recency === 'low') ? 1 : 2
-  let freq = (frequency === 'low') ? 1 : 2
-  return (10 * shop) + (20 * ccload) + (2 *rec) + (2 * freq)
-}
+// function simpleScore (topicvar = 'low', shop = false, ccload = false, adserv = false, adclick = false, frequency = 'low', recency = 'low') {
+//   let tvar = (topicvar === 'low') ? 1 : 2
+//   let svar = shop ?  0 : 1
+//   let cc = ccload ? 0 : 1
+//   let rec = (recency === 'low') ? 1 : 2
+//   let freq = (frequency === 'low') ? 1 : 2
+//   return (10 * shop) + (20 * ccload) + (2 *rec) + (2 * freq)
+// }
 
 function dealphabet (x) {
   let adstate
-  switch(x) {
-  case 'y' :
-    adstate = 'servead'
-    break
-  case 'z' :
-    adstate = 'clickad'
-    break
-  default :
-    adstate = 'noad'
+  switch (x) {
+    case 'y' :
+      adstate = 'servead'
+      break
+    case 'z' :
+      adstate = 'clickad'
+      break
+    default :
+      adstate = 'noad'
   }
   return adstate
 }

@@ -143,17 +143,15 @@ function pruneHspaceBulk (hspace, thresh = 1.0) {
 }
 
 // containerization of base functions
-// not so sure on predRing utility, but throwing it in there anyway for now
-function initOnlineELPH (stmSz = 7, thresh = 1.0, predRing = 1000) {
+// updt may eventually call a flush
+function initOnlineELPH (stmSz = 7, thresh = 1.0) {
   if (stmSz > 20) {
     throw new Error('arbitrary cutoff for hspace explosion')
   } else {
     return {hspace: {},
       stm: [],
-      preds: [],
-      predEnt: [],
+      updt: 0,
       stmSz: stmSz,
-      predSz: predRing,
       thresh: thresh}
   }
 }
@@ -161,6 +159,7 @@ function initOnlineELPH (stmSz = 7, thresh = 1.0, predRing = 1000) {
 function updateOnlineELPH (token, elph) {
   elph.hspace = observed(elph.hspace, elph.stm, token)
   elph.stm = pushRing(elph.stm, token, elph.stmSz)
+  elph.updt ++
   return elph
 }
 
@@ -173,7 +172,7 @@ function predictOnlineELPH (elph) {
 function vacuumELPH (elph) {
   elph.hspace = pruneHspaceBulk(elph.hspace, elph.thresh)
   return elph // doesn't need to return; trims the object in place because js scoping is ... I think because it's 'var'
-  // TODO pushRing of entropy and  rolling window of predictions
+  // TODO pushRing of entropy and  rolling window of predictions; different function for censoring some potential prunes
 }
 
 // useful for 'fitting'

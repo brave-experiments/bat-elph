@@ -1,6 +1,6 @@
 {
   "name": "@brave-intl/bat-elph",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "BAT Ad Timing Engine",
   "main": "elph.js",
   "directories": {

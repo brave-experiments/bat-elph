@@ -2,6 +2,8 @@
 
 // this form of ace restricts alphabetizer to 92 uniques aka 6.5 bits
 const ace = '!"#$%&()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[]^_`abcdefghijklmnopqrstuvwxyz{|}~'
+const ADSERVDX = 86 // 'y' = ace[86]
+const ADCLICKDX = 87 // 'z'
 
 // define array functions
 
@@ -95,19 +97,6 @@ function reliableEntropy (pspace) {
   return hrel
 }
 
-/*
-// don't really need this here
-function shannonEntropy (pspace) {
-  let tfreq = vectorSum(Object.values(pspace))
-  let hrel = -(1 / tfreq) * Math.log2(1 / tfreq)
-  for (var f in pspace) {
-    var tmp = pspace[f] / tfreq
-    hrel -= tmp * Math.log2(tmp)
-  }
-  return hrel
-}
-*/
-
 // observe a character
 function observed (hspace, stm, obs) {
   let hspaceKeys = powersetNNil(stm)
@@ -132,6 +121,25 @@ function predict (hspace, stm) {
   return out
 }
 
+// finds instances of alphabet appearing in hspace, returns
+// {length [key], [entropy]}
+function queryObservedAlphabet (hspace, letter = ace[ADCLICKDX]) {
+  let idx = []
+  let ent = []
+  let ii = 0.0
+  let keys = Object.keys(hspace)
+  for (var i = 0; i < keys.length; i++) {
+    var subsp = hspace[keys[i]]
+    var tmp = new Set(Object.keys(subsp))
+    if (tmp.has(letter)) {
+      idx[ii] = keys[i]
+      ent[ii] = reliableEntropy(subsp)
+      ii++
+    }
+  }
+  return {'length': ent.length, 'keys': idx, 'entropy': ent}
+}
+
 // TODO integrate this with observation/update/predict?
 function pruneHspaceBulk (hspace, thresh = 1.0) {
   for (var key in hspace) {
@@ -143,16 +151,11 @@ function pruneHspaceBulk (hspace, thresh = 1.0) {
 }
 
 // containerization of base functions
-// updt may eventually call a flush
 function initOnlineELPH (stmSz = 7, thresh = 1.0) {
   if (stmSz > 20) {
     throw new Error('arbitrary cutoff for hspace explosion')
   } else {
-    return {hspace: {},
-      stm: [],
-      updt: 0,
-      stmSz: stmSz,
-      thresh: thresh}
+    return {hspace: {}, updt: 0, stm: [], stmSz: stmSz, thresh: thresh}
   }
 }
 
@@ -166,7 +169,6 @@ function updateOnlineELPH (token, elph) {
 function predictOnlineELPH (elph) {
   let xx = predict(elph.hspace, elph.stm)
   return xx.symbol
-  // TODO pushRing of entropy and  rolling window of predictions
 }
 
 function vacuumELPH (elph) {
@@ -191,7 +193,7 @@ function alphabetizer (topicvar = 'low', shop = false, ccload = false, adserv = 
   let freq = (frequency === 'low') ? 0 : 1
   let index
   if (adserv || adclick) {
-    index = adserv ? 86 : 87 // y/z for adserv/adclick -not doing cartesian product of these with other pieces of state
+    index = adserv ? ADSERVDX : ADCLICKDX // y/z for adserv/adclick; cartesian for other states only
   } else {
     index = tvar + (2 * svar) + (4 * cc) + (8 * rec) + (16 * freq)
   }
@@ -222,6 +224,7 @@ function dealphabet (x) {
   return adstate
 }
 
+// exponential aggregating function from Cesa Bianchi/Lugosi Perdition, Burning, Flames
 // function pastAccuracy(moves, hist) {
 //   var pastAcc, ind;
 //   pastAcc = 0;
@@ -245,6 +248,7 @@ module.exports = {
   initOnlineELPH: initOnlineELPH,
   updateOnlineELPH: updateOnlineELPH,
   predictOnlineELPH: predictOnlineELPH,
+  queryObservedAlphabet: queryObservedAlphabet,
   setBulkELPH: setBulkELPH,
   vacuumELPH: vacuumELPH,
   reliableEntropy: reliableEntropy,

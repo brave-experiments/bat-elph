@@ -97,6 +97,21 @@ function reliableEntropy (pspace) {
   return hrel
 }
 
+// in order to trim subsequences without special token counts
+// potential cruft -off the wall idea
+function trimHspaceByToken(x, token) {
+  let keys = Object.keys(x)
+  let vals = Object.values(x)
+  let idx = []
+  for (var i in vals) {
+    if(arrayIntersect(Object.keys(vals[i]), [token]).length === 1) {
+      idx[keys[i]] = x[keys[i]]
+    }
+  }
+  return idx
+}
+
+
 // observe a character
 function observed (hspace, stm, obs) {
   let hspaceKeys = powersetNNil(stm)
@@ -150,6 +165,20 @@ function pruneHspaceBulk (hspace, thresh = 1.0) {
   return hspace
 }
 
+// potential cruft -off the wall idea
+function pruneHspaceCELPH (hspace, uncensored = ace[ADCLICKDX]) {
+  let hspace2 = pruneHspaceBulk(hspace)
+  return  trimHspaceByToken(hspace2, uncensored)
+}
+
+// potential cruft -off the wall idea
+function updateOnlineCELPH(token, elph, uncensored = ace[ADCLICKDX]) {
+  elph = updateOnlineELPH(token,elph)
+  elph.hspace = pruneHspaceCELPH(elph.hspace, uncensored)
+  return elph
+}
+
+
 // containerization of base functions
 function initOnlineELPH (stmSz = 7, thresh = 1.0) {
   if (stmSz > 20) {
@@ -174,7 +203,6 @@ function predictOnlineELPH (elph) {
 function vacuumELPH (elph) {
   elph.hspace = pruneHspaceBulk(elph.hspace, elph.thresh)
   return elph // doesn't need to return; trims the object in place because js scoping is ... I think because it's 'var'
-  // TODO pushRing of entropy and  rolling window of predictions; different function for censoring some potential prunes
 }
 
 // useful for 'fitting'
@@ -183,6 +211,16 @@ function setBulkELPH (slist, elph) {
     elph = updateOnlineELPH(slist[i], elph)
   }
   return elph
+}
+
+// useful for testing sequence predictions
+function bulkPredictELPH (slist, elph) {
+  let out = []
+  for (var i in slist) {
+    out[i] = predictOnlineELPH(elph)
+    elph = updateOnlineELPH(slist[i], elph)
+  }
+  return {out: out, elph: elph}
 }
 
 function alphabetizer (topicvar = 'low', shop = false, ccload = false, adserv = false, adclick = false, frequency = 'low', recency = 'low') {
